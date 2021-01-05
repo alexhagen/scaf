@@ -4,11 +4,13 @@ import sys
 import os
 
 
-class scaf(object):
+class Scaf(object):
     def __init__(self):
         # find some context variables
         self.cwd = os.getcwd()
-        parser = argparse.ArgumentParser(description='Scaffolding for simple dev tasks',
+        self.makefilename = Path(self.cwd) / Path('Makefile')
+        parser = argparse.ArgumentParser(description='Scaffolding for simple ' +
+                                         'dev tasks',
                                          usage='scaf <command> [<args>]')
         parser.add_argument('command', help='subcommand to run')
         args = parser.parse_args(sys.argv[1:2])
@@ -32,18 +34,56 @@ class scaf(object):
         # make directory doc
         (Path(self.cwd) / Path('doc')).mkdir(parents=True, exist_ok=True)
         # add line to top level Makefile
-        with open(Path(self.cwd) / Path('Makefile'), 'a') as f:
-            f.write('doc: doc/source/conf.py doc/Makefile doc/source/*.rst $(PYFILES)\n')
+        self._prepend_pyfiles()
+        with open(self.makefilename, 'a') as f:
+            f.write('doc: doc/source/conf.py doc/Makefile doc/source/*.rst ' +
+                    '$(PYFILES)\n')
             f.write('\tcd doc\n')
             f.write('\tmake markdown\n')
             f.write('\n')
         # pipe sphinx-quickstart commands and returns through the command line
-        command = f'sphinx-quickstart -p {self.project_name} -a "{self.author}" -r {self.version} -v {self.version} ' + \
-            f'-l en --sep --no-batchfile --ext-autodoc --ext-coverage --ext-mathjax --ext-intersphinx'
+        command = f'sphinx-quickstart -p {self.project_name} ' + \
+            f'-a "{self.author}" -r {self.version} ' + \
+            f'-v {self.version} -l en --sep --no-batchfile --ext-autodoc ' + \
+            '--ext-coverage --ext-mathjax --ext-intersphinx'
         print(command)
         os.chdir('doc')
         os.system(command)
         os.chdir('../')
 
+    def test(self):
+        """Add in testing."""
+        parser = argparse.ArgumentParser(description='Add testing folder ' +
+                                         'and set up testing makefile target')
+        print("generating test folder")
+        (Path(self.cwd) / Path('test')).mkdir(parents=True, exist_ok=True)
+        # add line to top of Makefile
+        self._prepend_tests()
+        # add line to top level Makefile
+        with open(self.makefilename, 'a') as f:
+            f.write('test: $(PYFILES) $(TESTS)\n')
+            f.write('\tpytest --ignore=sandbox/ --cov=./ --cov-report=html ' +
+                    '--cov-config=.coveragerc | tee doc/doc_test.txt\n')
+            f.write('\n')
+
+    def _prepend_pyfiles(self):
+        if os.path.isfile(self.makefilename):
+            with open(self.makefilename, 'r') as original:
+                data = original.read()
+        else:
+            data = ''
+        if 'PYFILES :=' not in data:
+            with open(self.makefilename, 'w') as modified:
+                modified.write(f'PYFILES := $(wildcard {self.project_name}' +
+                               '/*.py)\n' + data)
+
+    def _prepend_tests(self):
+        self._prepend_pyfiles()
+        with open(self.makefilename, 'r') as original:
+            data = original.read()
+        with open(self.makefilename, 'w') as modified:
+            modified.write('TESTS := $(wildcard test/test_*.py)\n\n' + data)
+
+
 if __name__ == "__main__":
-    scaf()
+    Scaf()
