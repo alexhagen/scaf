@@ -8,6 +8,7 @@ class Scaf(object):
     def __init__(self):
         # find some context variables
         self.cwd = os.getcwd()
+        self.project_name = os.path.basename(os.path.normpath(self.cwd))
         self.makefilename = Path(self.cwd) / Path('Makefile')
         parser = argparse.ArgumentParser(description='Scaffolding for simple ' +
                                          'dev tasks',
@@ -29,7 +30,6 @@ class Scaf(object):
         args = parser.parse_args(sys.argv[2:])
         self.version = args.version
         self.author = args.author
-        self.project_name = os.path.basename(os.path.normpath(self.cwd))
         print("generating documentation folder")
         # make directory doc
         (Path(self.cwd) / Path('doc')).mkdir(parents=True, exist_ok=True)
@@ -83,6 +83,15 @@ class Scaf(object):
             data = original.read()
         with open(self.makefilename, 'w') as modified:
             modified.write('TESTS := $(wildcard test/test_*.py)\n\n' + data)
+
+    def todo(self):
+        """Add in todo listing."""
+        parser = argparse.ArgumentParser(description='Add a todo target to ' +
+                                       'the Makefile')
+        self._prepend_pyfiles()
+        with open(self.makefilename, 'a') as f:
+            f.write('todo: $(PYFILES)\n')
+            f.write('\tleasot $(PYFILES) --filetype=.py >> todos.md\n')
 
 
 if __name__ == "__main__":
