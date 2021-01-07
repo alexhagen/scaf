@@ -64,7 +64,7 @@ class Scaf(object):
         with open(self.makefilename, 'a') as f:
             f.write('test: $(PYFILES) $(TESTS)\n')
             f.write('\tpytest --ignore=sandbox/ --cov=./ --cov-report=html ' +
-                    '--cov-config=.coveragerc | tee doc/doc_test.txt\n')
+                    '--cov-config=.coveragerc | tee doc/source/_static/doc_test.txt\n')
             f.write('\n')
         return self
 
