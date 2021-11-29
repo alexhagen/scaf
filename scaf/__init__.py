@@ -3,6 +3,8 @@ from pathlib import Path
 import sys
 import os
 
+HOME = os.path.expanduser("~")
+
 
 class Scaf(object):
     def __init__(self):
@@ -19,7 +21,21 @@ class Scaf(object):
             print('unrecognized command')
             parser.print_help()
             sys.exit(1)
+        self.args = sys.argv[2:]
         getattr(self, args.command)()
+
+    def p(self):
+        self.print()
+
+    def print(self):
+        file = self.args[0]
+        path = os.path.join(HOME, '.scaf', file)
+        if os.path.isfile(path):
+            with open(path) as f:
+                string = f.read()
+            print(string)
+        else:
+            raise Exception("No such file in templates")
 
     def doc(self):
         """Add in documentation."""

@@ -1,0 +1,11 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.6.5, pytest-4.5.0, py-1.8.0, pluggy-0.11.0
+rootdir: /Users/hage581/code/scaf
+plugins: cov-2.7.1
+collected 0 items
+
+
+---------- coverage: platform darwin, python 3.6.5-final-0 -----------
+Coverage HTML written to dir htmlcov
+
+========================= no tests ran in 0.09 seconds =========================
