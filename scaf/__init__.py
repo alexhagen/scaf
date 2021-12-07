@@ -161,7 +161,17 @@ class Scaf(object):
     #            f.write(content)
     #    return self
 
+def _make_parser():
+    parser
+    return parser
+
+def _run_cli(): # pragma: no cover
+    args = _make_parser().parse_args()
+    logging.basicConfig(format='%(levelname)s:%(message)s',
+                        level=args.logging_level)
+    scaf = Scaf(**vars(args))
+    scaf()
 
 
 if __name__ == "__main__":
-    Scaf()
+    _run_cli()
