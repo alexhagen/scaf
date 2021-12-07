@@ -1,0 +1,5 @@
+#!/usr/bin/env python
+import scaf
+
+if __name__ == "__main__":
+    scaf._run_cli()

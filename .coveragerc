@@ -1,0 +1,4 @@
+[run]
+include = */scaf/*
+omit = test/*
+       **setup.py
