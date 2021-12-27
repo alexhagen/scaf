@@ -52,9 +52,17 @@ class Scaf(object):
             if identifier == snippet_name:
                 print(snippet_text)
                 return
-            elif identifier in snippet_keywords:
-                print(snippet_text)
+            elif ',' not in identifier:
+                if identifier in snippet_keywords:
+                    print(f'NAME: {snippet_name}')
+                    print(snippet_text)
+            elif ',' in identifier:
+                identifiers = identifier.split(',')
+                if all([_i in snippet_keywords for _i in identifiers]):
+                    print(f'NAME: {snippet_name}')
+                    print(snippet_text)
         return
+
         #file = self.args[0]
         #path = os.path.join(HOME, '.scaf', file)
         #if os.path.isfile(path):
