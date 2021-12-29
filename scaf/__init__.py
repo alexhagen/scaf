@@ -1,8 +1,9 @@
 import argparse
-from pathlib import Path
 import sys
+import glob
 import os
 import pathlib
+import logging
 import json
 
 HOME = os.path.expanduser("~")
@@ -24,10 +25,6 @@ with open(SNIPPETSFILE) as f:
 
 class Scaf(object):
     def __init__(self):
-        ## find some context variables
-        #self.cwd = os.getcwd()
-        #self.project_name = os.path.basename(os.path.normpath(self.cwd))
-        #self.makefilename = Path(self.cwd) / Path('Makefile')
         parser = argparse.ArgumentParser(description='Scaffolding for simple ' +
                                          'dev tasks',
                                          usage='scaf <command> [<args>]')
@@ -63,14 +60,36 @@ class Scaf(object):
                     print(snippet_text)
         return
 
-        #file = self.args[0]
-        #path = os.path.join(HOME, '.scaf', file)
-        #if os.path.isfile(path):
-        #    with open(path) as f:
-        #        string = f.read()
-        #    print(string)
-        #else:
-        #    raise Exception("No such file in templates")
+    def l(self):
+        self.list()
+
+    def list(self):
+        for snippet in SNIPPETS:
+            snippet_name = list(snippet.keys())[0]
+            snippet_keywords = snippet[snippet_name]['keywords']
+            print(f'{snippet_name:30s}: {str(snippet_keywords):48s}')
+        return
+
+    def lf(self):
+        self.list_files()
+
+    def list_files(self):
+        for file in glob.glob(os.path.join(SCAFFILESDIR, '*')):
+            print(os.path.basename(file))
+        return
+
+    def pf(self):
+        self.print_file()
+
+    def print_file(self):
+        file = self.args[0]
+        path = os.path.join(SCAFFILESDIR, file)
+        if os.path.isfile(path):
+            with open(path) as f:
+                string = f.read()
+            print(string)
+        else:
+            raise Exception("No such file in templates")
 
     #def doc(self):
     #    """Add in documentation."""
@@ -169,16 +188,17 @@ class Scaf(object):
     #            f.write(content)
     #    return self
 
-def _make_parser():
-    parser
-    return parser
+#def _make_parser():
+#    parser = argparse.ArgumentParser(description='Scaffolding for simple ' +
+#                                     'dev tasks',
+#                                     usage='scaf <command> [<args>]')
+#    return parser
 
 def _run_cli(): # pragma: no cover
-    args = _make_parser().parse_args()
-    logging.basicConfig(format='%(levelname)s:%(message)s',
-                        level=args.logging_level)
-    scaf = Scaf(**vars(args))
-    scaf()
+    #args = _make_parser().parse_args()
+    #logging.basicConfig(format='%(levelname)s:%(message)s',
+    #                    level=args.logging_level)
+    scaf = Scaf()
 
 
 if __name__ == "__main__":
